@@ -1,0 +1,642 @@
+% \VignetteIndexEntry{Elementary Probability on Finite Sample Spaces}
+% \VignetteDepends{}
+% \VignetteSuggests{combinat}
+% \VignetteKeyword{probability}
+% \VignetteKeyword{sample space}
+% -*- mode: noweb; noweb-default-code-mode: R-mode; -*-
+
+\documentclass{article}
+% packages used
+\usepackage{amssymb,latexsym}
+\usepackage[mathscr]{eucal}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{layout}
+\usepackage{color}
+\usepackage{multicol}
+
+\pagenumbering{roman}
+\let\myTOC\tableofcontents
+\renewcommand\tableofcontents{%
+   \pdfbookmark[1]{Contents}{}
+   \myTOC
+   \clearpage
+   \pagenumbering{arabic} }
+
+\usepackage[%
+    colorlinks=true,linkcolor=blue,citecolor=black,urlcolor=blue,%
+    pdfstartview=FitH,%
+    bookmarksopen=true,bookmarksopenlevel=3,
+    pdfpagelabels=true,
+    bookmarksnumbered,%
+    plainpages=false,pdfpagelabels,%
+    pagebackref=true,%
+    pdftoolbar=false]{hyperref}
+
+% Fancy Expectation Notation
+\renewcommand{\P}{\mathrm{I\! P}}
+
+\title{Elementary Probability and the \texttt{prob} Package}
+\author{G.\ Jay Kerns}
+\SweaveOpts{echo=FALSE}
+\usepackage{a4wide}
+\begin{document}
+\maketitle
+\tableofcontents{}
+
+<<>>=
+library(prob)
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Preliminaries}
+This document is designed to get a person up and running doing elementary probability in \texttt{R} using the \texttt{prob} package.  In addition to \texttt{prob}, you will want to install the \texttt{combinat} package in order to use a couple of functions, but other than that a base installation of \texttt{R} should be more than enough.
+
+The prerequisites are minimal.  The term ``data frame'' should ring a bell, along with some common tricks like using \texttt{1:6} to represent the integers from 1 to 6.  That being said, please note that this document is not a treatise on probability.  The reader should have a passing familiarity with the basic tenets of probability and some of the topics that are customarily studied to be able to follow along.
+
+In the interest of space, most of the examples described below are uncharacteristically small and do not fully showcase the true computational power of \texttt{R}.  Nevertheless, the goal is for these small examples to serve as a starting point from which users can investigate more complicated problems at their leisure.
+
+
+\section{Sample Spaces}
+The first step is to set up a \emph{sample space}, or set of possible outcomes of an experiment.  In the \texttt{prob} package, the most simple form of a sample space is represented by a \emph{data frame}, that is, a rectangular collection of variables. Each row of the data frame corresponds to an outcome of the experiment.
+
+This is the primary way we will represent a sample space, both due to its simplicity and to maximize compatibility with the R Commander by John Fox.  However, this structure is not rich enough to describe some of the more interesting probabilistic applications we will encounter.  To handle these we will need to consider the more general \emph{list} data structure.  See the last section for some remarks in this direction.
+
+Note that the machinery doing the work to generate most of the sample spaces below is the \texttt{expand.grid()} function in the \texttt{base} package, also \texttt{combn()} in \texttt{combinat} and new but related \texttt{permsn()}.
+
+\subsection{Some Standard Sample Spaces}
+The \texttt{prob} package has some functions to get one started.  For example, consider the experiment of tossing a coin.  The outcomes are $H$ and $T$. We can set up the sample space quicky with the \texttt{tosscoin()} function:
+<<echo=TRUE,print=TRUE>>=
+tosscoin(1)
+@
+
+The number 1 tells \texttt{tosscoin()} that we only want to toss the coin once.  We could toss it three times:
+<<echo=TRUE,print=TRUE>>=
+tosscoin(3)
+@
+%
+As an alternative, we could consider the experiment of rolling a fair die:
+%
+<<echo=TRUE,print=TRUE>>=
+rolldie(1)
+@
+
+The \texttt{rolldie()} function defaults to a 6-sided die, but we can change it with the \texttt{nsides} argument.  Typing \texttt{rolldie(3, nsides = 4)} would be for rolling a 4-sided die three times.
+
+
+Perhaps we would like to draw one card from a standard set of playing cards (it is a long data frame):
+
+<<echo=TRUE,print=TRUE>>=
+cards()
+@
+
+The \texttt{cards()} function that we just used has arguments \texttt{jokers} (if you would like Jokers to be in the deck) and \texttt{makespace} which we will discuss later.
+
+Additionally, the \texttt{roulette()} function gives the standard sample space for one spin on a roulette wheel.  There are EU and USA versions available.  I would appreciate hearing about any other game or sample spaces that may be of general interest.
+
+
+\subsection{Sampling from Urns}
+Perhaps the most fundamental of statistical experiments consists of drawing distinguishable objects from an urn.  The \texttt{prob} package addresses this topic with the \texttt{urnsamples(x, size, replace, ordered)} function.  The argument \texttt{x} represents the urn from which sampling is to be done.  The \texttt{size} argument tells how large the sample will be.  The \texttt{ordered} and \texttt{replace} arguments are logical and specify how sampling will be performed.  We will discuss each in turn. In the interest of saving space, for this example let our urn simply contain three balls, labeled 1, 2, and 3, respectively.  We are going to take a sample of size 2.
+
+\subsubsection*{Ordered, With Replacement}
+If sampling is with replacement, then we can get any outcome $1,2,3$ on any draw.  Further, by ``ordered'' we mean that we shall keep track of the order of the draws that we observe.  We can accomplish this in \texttt{R} with
+
+<<echo=TRUE,print=TRUE>>=
+urnsamples(1:3, size = 2, replace = TRUE, ordered = TRUE)
+@
+Notice that rows 2 and 4 are identical, save for the order in which the numbers are shown. Further, note that every possible pair of the numbers 1 through 3 are listed.  This experiment is equivalent to rolling a 3-sided die twice, which we could have accomplished with \texttt{rolldie(2, nsides = 3)}.
+
+\subsubsection*{Ordered, Without Replacement}
+Here sampling is without replacement, so we may not observe the same number twice in any row.  Order is still important, however, so we expect to see the outcomes \texttt{1}, \texttt{2} and \texttt{2}, \texttt{1} somewhere in our data frame as before.
+<<echo=TRUE,print=TRUE>>=
+urnsamples(1:3, size = 2, replace = FALSE, ordered = TRUE)
+@
+This is just as we expected.  Notice that there are less rows in this answer, due to the restricted sampling procedure. If the numbers 1, 2, and 3 represented ``Fred'', ``Mary'', and ``Sue'', respectively, then this experiment would be equivalent to selecting two people of the three to serve as president and vice-president of a company, respectively,  and the sample space lists all possible ways that this could be done.
+
+\subsubsection*{Unordered, Without Replacement}
+Again, we may not observe the same outcome twice, but in this case, we will only keep those outcomes which (when jumbled) would not duplicate earlier ones.
+<<echo=TRUE,print=TRUE>>=
+urnsamples(1:3, size = 2, replace = FALSE, ordered = FALSE)
+@
+This experiment is equivalent to reaching in the urn, picking a pair, and looking to see what they are.  This is the default setting of \texttt{urnsamples()}, so we would have received the same output by simply typing \texttt{urnsamples(1:3,2)}.
+
+\subsubsection*{Unordered, With Replacement}
+The last possibility is perhaps the most interesting.  We replace the balls after every draw, but we do not remember the order in which the draws come.
+<<echo=TRUE,print=TRUE>>=
+urnsamples(1:3, size = 2, replace = TRUE, ordered = FALSE)
+@
+We may interpret this experiment in a number of alternative ways.  One way is to consider this as simply putting two 3-sided dice in a cup, shaking the cup, and looking inside as in a game of Liar's Dice, for instance.  Each row of the sample space is a potential pair we could observe.  Another equivalent view is to consider each outcome a separate way to distribute two identical golf balls into three boxes labeled 1, 2, and 3.  Regardless of the interpretation, \texttt{urnsamples()} lists every possible way that the experiment can conclude.
+
+Note that the urn does not need to contain numbers;  we could have just as easily taken our urn to be \texttt{x = c("Red", "Blue", "Green")}.  But, there is an \textbf{important} point to mention before proceeding.  Astute readers will notice that in our example, the balls in the urn were \textit{distinguishable} in the sense that each had a unique label to distinguish it from the others in the urn.  A natural question would be, ``What happens if your urn has indistinguishable elements, for example, what if \texttt{x = c("Red", "Red", "Blue")}?''  The answer is that \texttt{urnsamples()} behaves as if each ball in the urn is distinguishable, regardless of its actual contents.  We may thus imagine that while there are two red balls in the urn, the balls are such that we can tell them apart (in principle) by looking closely enough at the imperfections on their surface.
+
+In this way, when the \texttt{x} argument of \texttt{urnsamples()} has repeated elements, the resulting sample space may appear to be \texttt{ordered = TRUE} even when, in fact, the call to the function was \texttt{urnsamples(..., ordered = FALSE)}. Similar remarks apply for the \texttt{replace} argument.  We investigate this issue further in the last section.
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Counting Tools}
+
+
+The sample spaces we have seen so far have been relatively small, and we can visually study them without much trouble.  However, it is VERY easy to generate sample spaces that are prohibitively large.  And while \texttt{R} is wonderful and powerful and does almost everything except wash windows, even \texttt{R} has limits of which we should be mindful.
+
+In many cases, we do not need to actually generate the sample spaces of interest;  it suffices merely to count the number of outcomes. The \texttt{nsamp()} function will calculate the number of rows in a sample space made by \texttt{urnsamples()}, without actually devoting the memory resources necessary to generate the space.  The arguments are: \texttt{n}, the number of (distinguishable) objects in the urn, \texttt{k}, the sample size, and \texttt{replace}, \texttt{ordered} as above.
+
+In a probability course, one derives the formulas used in the respective scenarios.  For our purposes, it is sufficient to merely list them in the following table.  Note that $x!=x(x-1)(x-2)\cdots3\cdot2\cdot1$ and ${n \choose k}=n!/[k!(n-k)!]$.
+
+\begin{center}
+\textbf{Values of \texttt{nsamp(n, k, replace, ordered)}}
+\begin{tabular}{|lcc|}
+\hline
+ &  & \tabularnewline
+ & \texttt{ordered = TRUE} & \texttt{ordered = FALSE}\tabularnewline
+ &  & \tabularnewline
+\texttt{replace = TRUE} & $n^{k}$ & $\frac{(n-1+k)!}{(n-1)!k!}$\tabularnewline
+ &  & \tabularnewline
+\texttt{replace = FALSE} & $\frac{n!}{(n-k)!}$ & ${n \choose k}$\tabularnewline
+ &  & \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+
+
+
+\subsubsection*{Examples}
+We will compute the number of outcomes for each of the four \texttt{urnsamples()} examples that we saw in the last section.  Recall that we took a sample of size two from an urn with three distinguishable elements.
+<<echo=TRUE,print=TRUE>>=
+nsamp(n=3, k=2, replace = TRUE, ordered = TRUE)
+nsamp(n=3, k=2, replace = FALSE, ordered = TRUE)
+nsamp(n=3, k=2, replace = FALSE, ordered = FALSE)
+nsamp(n=3, k=2, replace = TRUE, ordered = FALSE)
+@
+Compare these answers with the length of the data frames generated above.
+
+\subsection{The Multiplication Principle}
+A benefit of \texttt{nsamp()} is that it is \emph{vectorized}, so that entering vectors instead of numbers for \texttt{n}, \texttt{k}, \texttt{replace}, and \texttt{ordered} results in a vector of corresponding answers.  This becomes particularly convenient when trying to demonstrate the Multiplication Principle for solving combinatorics problems.
+
+\subsubsection*{Example}
+Question: There are 11 artists who each submit a portfolio containing 7 paintings for competition in an art exhibition.  Unfortunately, the gallery director only has space in the winners' section to accomodate 12 paintings in a row equally spread over three consecutive walls.  The director decides to give the first, second, and third place winners each a wall to display the work of their choice.  The walls boast 31 separate lighting options apiece.  How many displays are possible?
+
+Answer:  The judges will pick 3 (ranked) winners out of 11 (with \texttt{rep=FALSE}, \texttt{ord=TRUE}).  Each artist will select 4 of his/her paintings from 7 for display in a row (\texttt{rep=FALSE}, \texttt{ord=TRUE}), and lastly, each of the 3 walls has 31 lighting possibilities (\texttt{rep=TRUE}, \texttt{ord=TRUE}). These three numbers can be calculated quickly with
+<<echo=TRUE,print=FALSE>>=
+n = c(11,7,31)
+k = c(3,4,3)
+r = c(FALSE,FALSE,TRUE)
+@
+<<echo=TRUE,print=TRUE>>=
+x = nsamp(n, k, rep = r, ord = TRUE)
+@
+(Notice that \texttt{ordered} is always \texttt{TRUE}; \texttt{nsamp()} will recycle \texttt{ordered} and \texttt{replace} to the appropriate length.) By the Multiplication Principle, the number of ways to complete the experiment is the product of the entries of \texttt{x}:
+<<echo=TRUE,print=TRUE>>=
+prod(x)
+@
+Compare this with the some standard ways to compute this in \texttt{R}:
+<<echo=TRUE,print=TRUE>>=
+(11*10*9)*(7*6*5*4)*31^3
+@
+or alternatively
+<<echo=TRUE,print=TRUE>>=
+prod(9:11)*prod(4:7)*31^3
+@
+or even
+<<echo=TRUE,print=TRUE>>=
+prod(factorial(c(11,7))/factorial(c(8,3)))*31^3
+@
+As one can guess, in many of the standard counting problems there aren't much savings in the amount of typing; it is about the same using \texttt{nsamp()} versus \texttt{factorial()} and \texttt{choose()}.  But the virtue of \texttt{nsamp()} lies in its collecting the relevant counting formulas in a one-stop shop.  Ultimately, it is up to the user to choose the method that works best for him/herself.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Defining a Probability Space}
+Once a sample space is defined, the next step is to associate a probability model with it in order to be able to answer probabilistic questions.   Formally speaking, a \textit{probability space} is a triple $(S,\mathscr{B},\P)$, where $S$ is a sample space, $\mathscr{B}$ is a sigma-algebra of subsets of $S$, and $\P$ is a probability measure defined on $\mathscr{B}$.   However, for our purposes all of the sample spaces are finite, so we may take $\mathscr{B}$ to be the power set (the set of all subsets of $S$) and it suffices to specify $\P$ on the elements of $S$, the outcomes.  The only requirement for $\P$ is that its values should be nonnegative and sum to 1.
+
+The end result is that in the \texttt{prob} package, a probability space is an object of outcomes \texttt{S} and a vector of probabilities (called ``\texttt{probs}'') with entries that correspond to each outcome in \texttt{S}.  When \texttt{S} is a data frame, we may simply add a column called \texttt{probs} to \texttt{S} and we will be finished; the probability space will simply be a data frame which we may call \texttt{space}.  In the case that \text{S} is a list, we may combine the \texttt{outcomes} and \texttt{probs} into a larger list, \texttt{space}; it will have two components: \texttt{outcomes} and \texttt{probs}.   The only requirement we place is that the entries of \texttt{probs} be nonnegative and \texttt{sum(probs)} is one.
+
+To accomplish this in \texttt{R}, we may use the \texttt{probspace()} function. The general syntax is \texttt{probspace(x, probs)}, where \texttt{x} is a sample space of outcomes and \texttt{probs} is a vector (of the same length as the number of outcomes in \texttt{x}).  The specific choice of \texttt{probs} depends on the context of the problem, and some examples follow to demonstrate some of the more common choices.
+
+
+\subsection{Examples}
+\subsubsection*{The Equally Likely Model}
+The equally likely model asserts that every outcome of the sample space has the same probability, thus, if a sample space has $n$ outcomes, then \texttt{probs} would be a vector of length $n$ with identical entries $1/n$.  The quickest way to generate \texttt{probs} is with the \texttt{rep()} function.  We will start with the experiment of rolling a die, so that $n=6$.  We will construct the sample space, generate the \texttt{probs} vector, and put them together with \texttt{probspace()}.
+<<echo=TRUE,print=TRUE>>=
+outcomes = rolldie(1)
+p = rep(1/6, times = 6)
+probspace(outcomes, probs = p)
+@
+The \texttt{probspace()} function is designed to save us some time in many of the most common situations.  For example, due to the especial simplicity of the sample space in this case, we could have achieved the same result with simply (note the name change for the first column)
+<<echo=TRUE,print=TRUE>>=
+probspace(1:6, probs = p)
+@
+  Further, since the equally likely model plays such a fundamental role in the study of probability, the \texttt{probspace()} function will assume that the equally model is desired if no \texttt{probs} are specified.  Thus, we get the same answer with only
+<<echo=TRUE,print=TRUE>>=
+probspace(1:6)
+@
+And finally, since rolling dice is such a common experiment in probability classes, the \texttt{rolldie()} function has an additional logical argument \texttt{makespace} that will add a column of equally likely \texttt{probs} to the generated sample space:
+<<echo=TRUE,print=TRUE>>=
+rolldie(1, makespace = TRUE)
+@
+or just \texttt{rolldie(1:6,TRUE)}.  Many of the other sample space functions (\texttt{tosscoin()}, \texttt{cards()}, \texttt{roulette()}, \textit{etc}.) have similar \texttt{makespace} arguments.  Check the documentation for details.
+
+One sample space function that does NOT have a \texttt{makespace} option is the \texttt{urnsamples()} function.  This was intentional.  The reason is that under the varied sampling assumptions the outcomes in the respective sample spaces are NOT, in general, equally likely.  It is important for the user to carefully consider the experiment to decide whether or not the outcomes are equally likely, and then use \texttt{probspace()} to assign the model.
+
+\subsubsection*{An unbalanced coin}
+While the \texttt{makespace} argument to \texttt{tosscoin()} is useful to represent the tossing of a \emph{fair} coin, it is not always appropriate.  For example, suppose our coin is not perfectly balanced, for instance, maybe the ``$H$'' side is somewhat heavier such that the chances of a $H$ appearing in a single toss is 0.70 instead of 0.5. We may set up the probability space with
+<<echo=TRUE,print=TRUE>>=
+probspace(tosscoin(1), probs = c(0.70, 0.30))
+@
+The same procedure can be used to represent an unbalanced die, roulette wheel, \textit{etc}.
+
+\subsection{Independent, Repeated Experiments}
+In some situations it is desired to repeat a certain experiment multiple times under identical conditions and in an independent manner.  We have seen many examples of this already:  tossing a coin repeatedly, rolling a die or dice, \textit{etc}.
+
+\subsubsection*{Example: An unbalanced coin continued}
+It was easy enough to set up the probability space for one toss, however, the situation becomes more complicated when there are multiple tosses involved.  Clearly, the outcome $HHH$ should not have the same probability as $TTT$, which should again not have the same probability as $HTH$.
+
+At the same time, there is symmetry in the experiment in that the coin does not remember the face it shows from toss to toss, and it is easy enough to toss the coin in a similar way repeatedly.
+
+The \texttt{iidspace()} function was designed specifically for this situation.  It has three arguments: \texttt{x} which is a vector of outcomes, \texttt{ntrials} which is an integer telling how many times to repeat the experiment, and \texttt{probs} to specify the probabilities of the outcomes of \texttt{x} in a single trial.  We may represent tossing our unbalanced coin three times with the following:
+<<echo=TRUE,print=TRUE>>=
+iidspace(c("H","T"), ntrials = 3, probs = c(0.7, 0.3))
+@
+As expected, the outcome $HHH$ has the largest probability, while $TTT$ has the smallest. (Since the trials are independent, $\P(HHH)=0.7^3$ and $\P(TTT)=0.3^3$, \textit{etc}.) Note that the result of the function call is a probability space, not a sample space (which we could construct already with the \texttt{tosscoin()} or \texttt{urnsamples()} functions).  The same procedure could be used to represent an unbalanced die, or any experiment that can be represented with a vector of possible outcomes.
+
+
+Note that \texttt{iidspace()} will assume \texttt{x} has equally likely outcomes if no \texttt{probs} argument is specified.  Also note that the argument \texttt{x} is a \emph{vector}, not a data frame.  Trying something like \texttt{iidspace(tosscoin(1),\ldots)} will give an error.
+
+
+\subsection{Words of Warning}
+It should be mentioned that while the splendour of \texttt{R} is uncontested, it, like everything else, has limits both with respect to the sample/probability spaces it can manage and with respect to the finite accuracy of the representation of most numbers (see the \texttt{R} FAQ 7.31).  When playing around with probability, it is tempting to try to set up a probability space of tossing 100 coins or rolling 50 dice, and then attempt to answer some scintillating questions. (Bear in mind: rolling a die just 9 times has a sample space with over \emph{10 million} outcomes.)
+
+Alas!  Even if there were enough RAM to barely hold the sample space (and there were enough time to wait for it to be generated), the infinitesimal probabilities that are associated with SO MANY outcomes make it difficult for the underlying machinery to handle reliably.  In some cases, special algorithms need to be called just to give something that holds asymptotically.  User beware. 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Subsets and Set Algebra}
+A sample space contains all possible outcomes of an experiment.  An \emph{event} represents a subset of the sample space, that is, a certain subcollection of outcomes.
+
+\subsection{Finding Subsets}
+There are plenty of existing methods for finding subsets of data frames, so we will only mention some of them here in passing.
+
+Given a data frame sample/probability space \texttt{S}, we may extract rows using the \texttt{[]} operator:
+<<echo=TRUE,print=TRUE>>=
+S = tosscoin(2, makespace = TRUE)
+S[1:3, ]
+S[c(2,4), ]
+@
+and so forth.  We may also extract rows that satisfy a logical expression using the \texttt{subset()} function, for instance
+<<echo=TRUE,print=FALSE>>=
+S = cards()
+@
+<<echo=TRUE,print=TRUE>>=
+subset(S, suit == "Heart")
+subset(S, rank %in% 7:9)
+@
+We could continue indefinitely.  Also note that mathematical expressions are allowed:
+<<echo=TRUE,print=TRUE>>=
+subset(rolldie(3), X1+X2+X3 > 16)
+@
+
+\subsection{Functions for Finding Subsets}
+It does not take long before the subsets of interest become more and more complicated to specify.  Yet the main idea is that we have a particular logical condition that we would like to apply to each row.  If the row satisfies the condition, then it should be in the subset and it should not be in the subset otherwise.
+
+There are many ways to construct logical expressions, and there is an abundance of material that does a great job describing how to go about it. The ease with which the expression may be coded depends of course on the question being asked.  The \texttt{prob} package contributes a few functions that help to answer questions typically encountered in an elementary probability course.
+
+ \subsubsection*{The function \texttt{isin()}}
+Experienced users of \texttt{R} will no doubt be familiar with the function \texttt{\%in\%}.  It can be used in the following way.
+<<echo=TRUE,print=FALSE>>=
+x = 1:10
+y = 3:7
+y %in% x
+@
+Notice that the value is a vector of length 5 which tests if each element of \texttt{y} is in \texttt{x}, in turn. But perhaps we would like to know whether the \emph{whole} vector \texttt{y} is in \texttt{x}.  We can do this with the \texttt{isin()} function.
+<<echo=TRUE,print=TRUE>>=
+isin(x,y)
+@
+Of course, one may ask why we did not try something like \texttt{all(y \%in\% x)}, which would give a single result, \texttt{TRUE}.  The reason is that the answers are different in the case that \texttt{y} has repeated values.  Compare:
+<<echo=TRUE,print=FALSE>>=
+x = 1:10
+y = c(3,3,7)
+@
+<<echo=TRUE,print=TRUE>>=
+all(y %in% x)
+isin(x,y)
+@
+The reason is of course that \texttt{x} contains the value 3, but it doesn't have two 3's.  The difference becomes significant when rolling multiple dice, playing cards, \emph{etc}. Note that there is an argument \texttt{ordered}, which tests whether the elements of \texttt{y} appear in \texttt{x} in the order in which they are specified in \texttt{y}.  The consequences are
+<<echo=TRUE,print=TRUE>>=
+isin(x, c(3,4,5), ordered = TRUE)
+isin(x, c(3,5,4), ordered = TRUE)
+@
+The connection to probability is that we are given a data frame sample space and we would like to find a subset of the space.  A \texttt{data.frame} method has been written for \texttt{isin()} that simply applies the function to each row of the data frame. Certainly, one could extend the function to work for columns or entries instead of rows, but simplicity is a primary goal of the \texttt{prob} package.  It is easy enough for experienced users to modify the code as desired to serve their purposes.
+
+We can see the method in action with the following:
+<<echo=TRUE,print=FALSE>>=
+S = rolldie(4)
+subset(S, isin(S, c(2,2,6), ordered = TRUE))
+@
+There are a few other functions written to find useful subsets, namely, \texttt{countrep()} and \texttt{isrep()}.  Essentially these were written to test for (or count) a specific number of designated values in outcomes.  See the documentation for details.
+
+
+\subsection{Set Union, Intersection, and Difference}
+Given subsets $A$ and $B$, it is often useful to manipulate them in an algebraic fashion.  To this end, we have three set operations at our disposal: union, intersection, and difference.  Below is a table summarizing the pertinent information about these operations.
+
+\begin{center}
+\begin{tabular}{|l|c|l|l|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  Name          & Denoted   & Defined by elements   & Code \\
+  \hline
+  Union         & $A\cup B$ & in $A$ or $B$ or both & \texttt{union(A,B)} \\
+  Intersection  & $A\cap B$ & in both $A$ and $B$   & \texttt{intersect(A,B)} \\
+  Difference    & $A \textbackslash B$   & in $A$ but not in $B$ & \texttt{setdiff(A,B)} \\
+  \hline
+\end{tabular}
+\end{center}
+Some examples follow.
+<<echo=TRUE,print=FALSE>>=
+S = cards()
+A = subset(S, suit == "Heart")
+B = subset(S, rank %in% 7:9)
+@
+We can now do some set algebra:
+<<echo=TRUE,print=TRUE>>=
+union(A,B)
+intersect(A,B)
+setdiff(A,B)
+setdiff(B,A)
+@
+Notice that \texttt{setdiff()} is not symmetric.  Further, note that we can calculate the \emph{complement} of a set $A$, denoted $A^c$ and defined to be the elements of $S$ that are not in $A$ simply with \texttt{setdiff(S,A)}.
+
+While our example did not have a \texttt{probs} column, the set algebra functions operate the same way even if one had been there (although, in that case one would need to be careful that the events were each subsets of the \emph{same probability space}, or some strange answers may result).
+
+There have been methods written for \texttt{intersect()}, \texttt{setdiff()}, \texttt{subset()}, and \texttt{union()} in the case that the input objects are of class \texttt{ps}.  See Section 9.1.
+
+
+\subsubsection*{Note:} When you loaded the \texttt{prob} package, you most certainly noticed the message: ``\texttt{The following object(s) are masked from package:base: intersect setdiff, subset, union}''.  The reason is that there already exist methods for the functions \texttt{union()}, \texttt{intersect()}, and \texttt{setdiff()} in the \texttt{base} package which ships with \texttt{R}.  However, these methods were designed for when the arguments are vectors of the same mode.  Since we are manipulating probability spaces consisting of data frames and lists, it was necessary to write methods to handle those cases as well.  When the \texttt{prob} package is loaded, \texttt{R} recognizes that there are multiple versions of the same function in the search path and acts to shield the new definitions from the existing ones.  But there is no cause for alarm, thankfully, because the \texttt{prob} functions have been carefully defined to be the usual \texttt{base} package definition in the case that the arguments are vectors.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Calculating Probabilities}
+Now that we have ways to find subsets, we can at last move to calculating the probabilities associated with them.  This is accomplished with the \texttt{prob()} function.
+
+Consider the experiment of drawing a card from a standard deck of playing cards.  Let's denote the probability space associated with the experiment as $S$, and let the subsets $A$ and $B$ be defined by the following:
+<<echo=TRUE,print=FALSE>>=
+S = cards(makespace = TRUE)
+A = subset(S, suit == "Heart")
+B = subset(S, rank %in% 7:9)
+@
+Now it is easy to calculate
+<<echo=TRUE,print=TRUE>>=
+prob(A)
+@
+Note that we can get the same answer with
+<<echo=TRUE,print=TRUE>>=
+prob(S, suit == "Heart")
+@
+We also find \texttt{prob(B) = 0.23} (listed here approximately, but 12/52 actually) and \texttt{prob(S)=1}.  In essence, the \texttt{prob()} function operates by summing the \texttt{probs} column of its argument.  It will find subsets ``on-the-fly'' if desired.
+
+We have as yet glossed over the details.  More specifically, \texttt{prob()} has three arguments:  \texttt{x} which is a probability space (or a subset of one), \texttt{event} which is a logical expression used to define a subset, and \texttt{given} which is described in the next subsection.
+
+\emph{WARNING}.  The \texttt{event} argument is used to define a subset of \texttt{x}, that is, the only outcomes used in the probability calculation will be those that are elements of \texttt{x} and satisfy \texttt{event} simultaneously. In other words, \texttt{prob(x,event)} calculates \texttt{prob(intersect(x, subset(x, event)))}.  Consequently, \texttt{x} should be the entire probability space in the case that \texttt{event} is non-null.
+
+
+\subsection{Conditional Probability}
+The conditional probability of the subset $A$ given the event $B$ is defined to be 
+$$
+\P(A|B)=\frac{\P(A\cap B)}{\P(B)},\quad \mbox{if $\P(B)>0.$}
+$$
+We already have all of the machinery needed to compute conditional probability. All that is necessary is to use the \texttt{given} argument to the \texttt{prob()} function, which will accept input in the form of a data frame or a logical expression.   Using the above example with $S$=\{draw a card\}, $A=$\{\texttt{suit = "Heart"}\}, and $B$=\{\texttt{rank} is \texttt{7, 8, or 9}\}.
+<<echo=TRUE,print=TRUE>>=
+prob(A, given = B)
+prob(S, suit=="Heart", given = rank %in% 7:9)
+prob(B, given = A)
+@
+Of course, we know that given the event \texttt{B} has occurred (a 7, 8, 9 has been drawn), the probability that a Heart has been drawn is 1/4.  Similarly, given that the \texttt{suit} is "Heart", there are only three out of the 13 Hearts that are a 7, 8, or 9, so $\P(B|A)=3/13$. We can compute it by going back to the definition of conditional probability:
+<<echo=TRUE,print=TRUE>>=
+prob( intersect(A,B) ) / prob(B)
+@
+We have seen that there is some flexibility in the \texttt{given} argument in that it can be either a data frame or it can be a logical expression that defines the subset.  HOWEVER, that flexibility is limited.  In particular, if \texttt{given} is a logical expression, then \texttt{event} must also be specified (also a logical expression).  And in this case, the argument \texttt{x} should be the entire sample space, not a subset thereof, for the reason described in the last section.
+
+\subsubsection*{Pedagogical Notes}
+We can now begin to reap the benefits of this framework.  Suppose we would like to see an example of the General Addition Rule:
+<<echo=TRUE,print=TRUE>>=
+prob( union(A,B) )
+prob(A) + prob(B) - prob(intersect(A,B))
+@
+Or perhaps the Multiplication Rule:
+<<echo=TRUE,print=TRUE>>=
+prob( intersect(A,B) )
+prob(A) * prob(B, given = A)
+@
+We could give evidence that consecutive trials of flipping a coin are independent:
+<<echo=TRUE,print=FALSE>>=
+S = tosscoin(2, makespace = TRUE)
+@
+<<echo=TRUE,print=TRUE>>=
+prob(S, toss2 == "H")
+prob(S, toss2 == "H", given = toss1=="H")
+@
+There are many topics available for investigation.  Keep in mind, however, that the point is not that \texttt{R} (or any other software package, for that matter) will ever be an effective surrogate for critical thinking; rather, the point is that statistical tools like \texttt{R} serve to change the classroom landscape, hopefully for the better.  Plus, it's free.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Simulating Experiments}
+Given a probability space, how do we actually perform the experiment in \texttt{R}? The \texttt{prob} package handles this with the \texttt{sim()} function.  The only arguments are \texttt{x} for the probability space and \texttt{ntrials} for the desired number of repetitions.
+
+We already have all of the outcomes contained in the probability space, and we know each outcome's probability from the \texttt{probs} column.  Thus, the only task is to sample the rows of \texttt{x} according to their respective probabilities, which is deftly perfomed with the existing \texttt{sample()} function. Essentially, the \texttt{sim()} function is a wrapper for \texttt{sample()}, except that it strips the \texttt{probs} column from the result and renames the rownames of the data frame consecutively from \texttt{1:n}.
+
+Suppose, for example, that the experiment consisted of picking a single card at random from a standard deck of playing cards.  The code would look something like the following.
+<<echo=TRUE,print=FALSE>>=
+S = cards(makespace=TRUE)
+sim(S, ntrials = 5)
+@
+We only simulated the experiment 5 times in the interest of space; a person could simulate as many trials as desired (within reason).  Note that when the sample space has more than 250 reasonably likely rows then a special procedure (Walker's alias method) is used to perform the sampling.  See \texttt{?sample} and the reference to Ripley (1987) listed there.
+
+\subsection{Comparing Theory with Practice}
+Some may be skeptical of the results from \texttt{sim()}.  After all, how does one know that the sampling procedure is going according to plan?  The answer is: we don't, at least not for certain.  But we can get a pretty good idea using  the \texttt{empirical()} function.
+
+The function works by adding a \texttt{probs} column to the simulated data frame (called \texttt{sims}, say) with equally likely entries of $1/n$, where $n$ is the number of rows.  Then it aggregates the duplicated rows of \texttt{sims}, all the while accumulating the probabilities associated with each.  The final result will be a data frame containing the unique rows of \texttt{sims}, together with a column \texttt{probs} at the end containing the respective observed relative frequencies of the rows.
+
+Let's look at an example.  For simplicity suppose the experiment is tossing a coin twice.  We will construct the probability space, simulate 50,000 double coin flips, and \texttt{empirical()} the result.
+<<echo=TRUE,print=FALSE>>=
+S = tosscoin(2, makespace = TRUE)
+sims = sim(S, ntrials = 50000)
+empirical(sims)
+@
+We see that each outcome has an observed relative frequency fairly close to 0.25, as we would expect.  Of course, this doesn't prove that the sampling is perfect, but it is good news nonetheless.
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Adding Random Variables}
+We have seen how to construct sample spaces, find subsets, define probability spaces, and simulate experiments.  But, sometimes we are not interested so much in the experiment itself, rather, we care more about a certain numerical quantity associated with the experiment, also known as a \emph{random variable}.  This section describes how to define random variables based on an experiment and how to examine their behavior once defined.
+
+The primary vessel we use for this task is the \texttt{addrv()} function.  There are two ways to use it, and will describe both.
+
+\subsection{Supplying a Defining Formula}
+The first method is based on the existing \texttt{transform()} function written by Peter Dalgaard.  See \texttt{?transform}.  The idea is to write a formula defining the random variable inside the function, and it will be added as a column to the data frame.  As an example, let us roll a 4-sided die three times, and let's define the random variable $U=X1-X2+X3$.
+<<echo=TRUE,print=FALSE>>=
+S = rolldie(3, nsides = 4, makespace = TRUE)
+S = addrv(S, U = X1-X2+X3)
+@
+Now let's take a look at the values of $U$.  In the interest of space, we will only reproduce the first few rows of $S$ (there are $4^3=64$ rows in total).
+<<echo=TRUE,print=TRUE>>=
+S[1:9,]
+@
+We see by looking at the $U$ column it is operating just like it should.  We can now answer questions like
+<<echo=TRUE,print=TRUE>>=
+prob(S, U > 6)
+@
+\subsection{Supplying a Function}
+Sometimes we have a function laying around that we would like to apply to some of  the outcome variables, but it is unfortunately tedious to write out the formula defining what the new variable would be.  The \texttt{addrv()} function has an argument \texttt{FUN} specifically for this case.  Its value should be a legitimate function from \texttt{R}, such as \texttt{sum}, \texttt{mean}, \texttt{median}, \emph{etc}.  Or, you can define your own function.   Continuing the previous example, let's define $V=\max(X1,X2,X3)$ and $W = X1+X2+X3$.
+<<echo=TRUE,print=FALSE>>=
+S = addrv(S, FUN = max, invars = c("X1","X2","X3"), name = "V")
+S = addrv(S, FUN = sum, invars = c("X1","X2","X3"), name = "W")
+S[1:9,]
+@
+Notice that \texttt{addrv()} has an \texttt{invars} argument to specify exactly to which columns one would like to apply the function \texttt{FUN}. If no input variables are specified, then \texttt{addrv()} will apply \texttt{FUN} to all non-\texttt{probs} columns. Further, \texttt{addrv()} has an optional argument \texttt{name} to give the new variable; this can be useful when adding several random variables to a probability space (as above).  If not specified, the default name is ``$X$''.
+
+\subsection{Marginal Distributions}
+As we can see above, often after adding a random variable $V$ to a probability space one will find that $V$ has values that are repeated, so that it becomes difficult to understand what the ultimate behavior of $V$ actually is.  We can use the \texttt{marginal()} function to aggregate the rows of the sample space by values of $V$, all the while accumulating the probability associated with $V$'s distinct values.  Continuing our example from above, suppose we would like to focus entirely on the values and probabilities of $V=\max(X1,X2,X3)$.
+<<echo=TRUE,print=TRUE>>=
+marginal(S, vars = "V")
+@
+We could save the probability space of $V$ in a data frame and study it further, if we wish.  As a final remark, we can calculate the marginal distributions of multiple variables desired using the \texttt{vars} argument. For example, suppose we would like to examine the joint distribution of $V$ and $W$.
+<<echo=TRUE,print=TRUE>>=
+marginal(S, vars = c("V", "W"))
+@
+Note that the default value of \texttt{vars} is the names of all columns except \texttt{probs}.  This can be useful if there are duplicated rows in the probability space; see the next section.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Additional Topics}
+\subsection{More Complicated Sample Spaces}
+\subsubsection*{A Poker Case Study}
+This subsection is for those who are interested in calculating probability on more complicated spaces than those represented by a simple data frame.  We will walk through the example of a game of poker because it highlights some of the issues encountered when investigating more complicated sample spaces.
+
+We have discussed the case of drawing a single card from a standard deck.  In that case, each card has two properties: a \texttt{rank} and \texttt{suit}.  We can ask questions about either or both to define subsets and calculate probabilities.
+
+But now let us imagine a standard poker hand of five cards (Five Card Stud, for example).  How may we represent a typical outcome?  One way is to make 10 columns in a data frame.  The first two could be the \texttt{suit} and \texttt{rank} of the first card, the next two could be the \texttt{suit} and \texttt{rank} of the second card, and so forth.
+
+This representation is undesirable for two reasons. The first is that the order of draws in a poker hand is irrelevant for the Five Card Stud game.  Thus, we would need to disregard the order of the entries with respect to columns, while keeping the columns paired with respect to the draws, which is not tractable to perform in \texttt{R}.  The second reason is that many of the important properties of a poker hand (are all of the \texttt{suits} the same? do the \texttt{ranks} form an ascending sequence?, \emph{etc.}) are not easy to examine when the data are split between columns.  For instance, to see if we had a flush, we would need to check the value of the \texttt{suit} in columns 2, 4, 6, 8, and 10. To combine this question with something about \texttt{rank} makes it even more complicated.
+
+It would be nice if all five cards in the hand could be represented by a data frame, with the two columns \texttt{rank} and \texttt{suit}, and five rows, one for each card in the hand.  It would be easier to ask questions of a particular outcome (are all rows of \texttt{suit} the same?  \emph{etc.}), and we already have been considering the rows of a data frame sample space to be unordered.  Of course, the sample space of all possible five card hands would now be the set of all possible data frames, dimension 5x2, consisting of respective rows of the \texttt{cards()} sample space.
+
+But this last task could be easily achieved by doing \texttt{urnsamples(replace = FALSE , ordered = FALSE)} on the rows of \texttt{cards()}.  Samples would be of size 5.  And for each possible sample, we construct a 5x2 data frame of the respective rows and store the results.  Where to store them?  In a \emph{list}, called \texttt{outcomes}.  Each entry of the list will be a data frame, conceptually, a five card hand.
+
+Once we have the \texttt{outcomes}, to each entry we should associate a probability, which we could store in a vector called \texttt{probs}.  To construct a probability space, we combine the list \texttt{outcomes} and the vector \texttt{probs} into a master list, which we call \texttt{space}.
+
+
+
+\subsubsection*{Details}
+The preceding discussion has motivated the definition of what in the \texttt{prob} package is the most general probability space: a list containing the two components \texttt{outcomes} and \texttt{probs}.  The component \texttt{outcomes} is a list containing elements of the most arbitrary sort; they can be data frames, vectors, more lists, whatever.  The \texttt{probs} component is a vector (of the same length as \texttt{outcomes}), which associates to each element of \texttt{outcomes} a nonnegative number.  The only additional requirement is that the \texttt{sum} of \texttt{probs} be one.
+
+Of course, in most cases of interest the elements of \texttt{outcomes} will have a decidedly regular structure, to facilitate asking useful questions.  To handle experiments similar in format to the poker example, the \texttt{urnsamples()} function has been made generic and a data frame method has been added.  In this way, one can \texttt{urnsample} from a data frame \texttt{x}, and a list of \texttt{outcomes} is the returned value.  Each entry of \texttt{outcomes} is a data   frame with the same columns as \texttt{x}, simply with the number of rows equaling  \texttt{size}.
+
+In addition, the \texttt{probspace()} function is also generic, and has a list method to construct probability spaces from an input list \texttt{x} and a vector of probabilities \texttt{probs}.  If no \texttt{probs} are specified, then \texttt{probspace()} assumes that the equally likely model was intended and automatically generates a vector of the correct length and with the correct entries.
+
+The output object has class \texttt{ps}, to represent a probability space.  It also has a secondary class of \texttt{list}, so that the \texttt{list} methods for other useful functions (such as \texttt{print()}) will work in the case that no \texttt{ps} method is found.
+
+
+
+\subsubsection*{Example}
+We will walk through an example to get you started making more general sample spaces, and we will continue with the poker example above with one modification.  For our simple poker game, we will only draw two cards instead of five.  (Even two cards takes a few seconds, and five cards is incredibly large, over 2.5 million outcomes.  See Section 4.3.)
+<<echo=TRUE,print=FALSE>>=
+L = cards()
+M = urnsamples(L, 2)
+N = probspace(M)
+@
+The first command initializes the set of 52 cards into the data frame \texttt{L}.  The second command generates the set of all possible 2 card hands from the deck and stores them in \texttt{M}; note that \texttt{M} is a list of length \Sexpr{length(M)}.  The third command takes \texttt{M} and combines it with a vector \texttt{probs}, which is by default assumed to represent the equally likely model.  The result is the probability space \texttt{N}.
+
+We then define some subsets so that we can do probability.  The next four commands set up the four events \texttt{A}, \texttt{B}, \texttt{C}, and \texttt{D}.
+<<echo=TRUE,print=FALSE>>=
+A = subset(N, all(suit=="Heart"))
+B = subset(N, any(suit=="Heart"))
+C = subset(N, any(suit=="Heart") & all(rank=="A"))
+D = subset(N, any(suit=="Spade") & any(rank=="A"))
+@
+Now let's do some probability:
+<<echo=TRUE,print=TRUE>>=
+prob(A)
+prob(B)
+prob(C, given = D)
+prob(D, given = C)
+@
+We can use \texttt{all(suit=="Heart")} to check for a flush, for instance.   Note that general sample spaces constructed in the above fashion tend to get very large, very quickly.  This has consequences when it comes time to do set algebra and compute conditional probability.  Be warned that these can use a large amount of computing resources.   Since the theme of the \texttt{prob} package leans toward simplicity over efficiency, users interested in doing authentically complicated probability problems would be advised to streamline the \texttt{prob} package functions for their own uses.
+
+\subsection{Discrete Multivariate Distributions}
+It is plain to see that while we were doing all of this talking about ``outcomes'', ``sample spaces'', \emph{etc}., what we were really talking about were discrete multivariate distributions with finite support (strictly speaking, only when all of the outcomes are numeric).  The multinomial distribution is one example, and there are infinitely many others.
+
+It is customary to represent the support of an $n$ dimensional discrete random variable as a suitable subset of an $n$ dimensional lattice or Euclidean space, and it seems like some of the existing \texttt{R} packages for discrete multivariate distributions have made progress in this area. We hope that the \texttt{prob} package helps for further development of this important topic.
+
+For a simple example, let's set up a standard multinomial probability space.  Our experiment will be taking a sample, with replacement, of size 2 from an urn with three balls inside, labeled 1, 2, and 3, respectively.  The random variables \texttt{X1}, \texttt{X2}, and \texttt{X3} will be the respective counts of the balls labelled 1, 2, and 3 in our sample (do you see how to do this the long way?).
+
+<<echo=TRUE,print=FALSE>>=
+library(combinat)
+out = data.frame(t(xsimplex(3,2)))
+p = apply(out, MARGIN = 1, FUN = dmultinom, prob = c(1,1,1))
+@
+<<echo=TRUE,print=TRUE>>=
+S = probspace(out, p)
+@
+The first command sets up the sample space.  The \texttt{xsimplex()} function (in the \texttt{combinat} package) constructs a 3x6 matrix of all points on a \{3,2\} simplex lattice.  The transpose function \texttt{t()} transposes the matrix to be 6x3, so that the outcomes will be rows instead of columns.  The \texttt{data.frame()} function coerces the matrix into a data frame, in the format of a \texttt{prob} sample space.
+
+The next line defines the \texttt{probs} vector associated with the outcomes, and it is done with the \texttt{apply()}  function.  The idea is to apply the \texttt{dmultinom()} function to each row (\texttt{MARGIN=1}) of the data frame \texttt{out}.  In general, given any multivariate probability mass function, we can use the \texttt{FUN} argument of \texttt{apply()} to define the \texttt{probs} vector.
+
+Once we set up the probability space \texttt{S}, we are free to study it in detail.  We can simulate, calculate marginal distributions, measure correlations, \emph{etc}.
+
+
+\subsection{(In)distinguishable Elements}
+We hinted at the end of Section 2 that some interesting things happen when sampling from an urn with repeated elements.  As we remarked there, as far as \texttt{urnsamples()} is concerned, \textbf{all} elements of the urn are distinguishable, even if they may not appear to be to our naked eye. (The reason is that \texttt{urnsamples()} operates on the basis of the \emph{indices} of the elements of the urn \texttt{x}, and not actually on the elements themselves. This can be very useful for keeping track of the elements, but gives some surprises if the user is not careful.)
+
+Let's look at a concrete example.  We will sample from an urn that has 4 red balls and 10 blue balls inside.  We will sample without replacement, and in an unordered fashion (the default behavior of \texttt{urnsamples}).
+
+<<echo=TRUE,print=FALSE>>=
+x = rep(c("Red", "Blue"), times = c(4,10))
+P = urnsamples(x, size = 3, replace = FALSE, ordered = FALSE)
+Q = probspace(P)
+@
+So far, so good.  If I were to ask the reader about the experiment just described, (s)he would likely say, ``Of course!  This corresponds to the hypergeometric model, where \texttt{Red} constitutes a success, and in the case that we are interested in the number of \texttt{Red}s in our sample''.  However, if we take a look at the probability space \texttt{Q}, then we are in for quite a surprise!  It has 364 elements, most of which being all \texttt{Red} or all \texttt{Blue}.  So what happened?  The answer is that while many outcomes \texttt{Blue  Blue  Blue} may \emph{look} the same listed in the data frame \texttt{Q}, these were derived from actually many, many \texttt{Blue}s  in separate positions in \texttt{x}.  Imagine that we took out a large magnifying glass and took a closer look:  many of the \texttt{Blue}s that look the same from a distance reveal themselves to be quite different upon closer examination.  Again, the technical reason for the repeats is that \texttt{urnsamples()} operates on the $1,2,\ldots,14$ indices of \texttt{x} by drawing unordered samples, without replacement, of \texttt{1:14}.  It then takes those samples and substitutes back to generate the entries of the data frame.  In the case where \texttt{x} has repeated values, the result is many repeated rows in the sample space \texttt{P}.
+
+So what do we do?  What if we really want to see the hypergeometric model, and we really only care about the number of \texttt{Red}s in our sample?  Well, the good news is that while there are many repeated rows, it turns out that there are \emph{exactly} the right number of rows repeated \emph{exactly} the right number of times.  We simply need to accumulate them to get the desired answer.
+
+The \texttt{noorder()} function was designed for this case.  The way it works is to 1) sort the outcomes of each row, 2) aggregate these new rows to eliminate duplications, and 3) accumulate the probabilities of each of the duplicated rows.  Its only input is a probability space, and its return value is also a probability space.  Let's \texttt{noorder()} the probability space \texttt{Q} and see what happens:
+<<echo=TRUE,print=FALSE>>=
+noorder(Q)
+@
+Now, this is more like it.  There are four outcomes, each with a differing number of \texttt{Red}s in the sample, namely, either 0, 1, 2, or 3 \texttt{Red}s.  The probabilities associated with each outcome perhaps look familiar, and we can confirm the connection between these and the hypergeometric model with the \texttt{dhyper()} function:
+<<echo=TRUE,print=FALSE>>=
+dhyper(0:3, 4, 10, 3)
+@
+Indeed, the matches are no coincidence.  This example drives home the point that in every case, one must think carefully about the experiment, look carefully at the results during every step of the process, and apply the tools at hand to ultimately solve the problem.
+
+  Keep in mind that we could have arrived at the same answer by simply defining the random variable $X=\mbox{number of Reds}$ and finding the \texttt{marginal()} distribution of $X$.
+
+
+
+\subsection{Some Things That This Package Does Not Do}
+Some users will notice that some topics were omitted from the \texttt{prob} package.  The following is a  partial list of some of the more important missing topics.
+
+\begin{itemize}
+\item{\textbf{Expectation:}}
+the concept of expectation is nowhere to be found in the \texttt{prob} package.  There are two reasons for this.  First, once we have the probability space it is simple to use column operations to find expected values and it is instructive for students to perform those tasks themselves.  Second, there already exists a perfectly fine expectation operator \texttt{E()} in the \texttt{distr} family of packages;  there is no need to duplicate that functionality here.
+
+\item{\textbf{Infinite Sample Spaces:}}
+the package as a whole assumes that the sample space is finite.  This rules out common sample spaces discussed in many probability courses, for instance, the sample space associated with tossing a coin until Heads occurs.  Unfortunately, it is impossible to store an infinitely long vector in the finite memory of a computer.
+
+There are of course tricks around difficulties like these, such as chopping off the sample space once the probabilities drop below a certain threshold. But the geometric case also poses the problem that the outcomes are of differing lengths, which does not line up nicely in data frame format.  It was decided to forego addressing these issues at the present time.
+
+\item{\textbf{Bayes' Rule:}} there are no specific functions devoted to Bayes' Rule, and this is simply because they are not needed; we have the entire sample space at our disposal and can discuss partitions of it naturally without any extra help.  The \texttt{prob} package was written to be largely neutral with respect to both the frequentist and subjective interpretations of probability, and it can be used under either paradigm.  In fact, the only function even remotely frequentist is \texttt{empirical()}.  The fact that \texttt{probs} is arbitrary leaves it to the user to determine an appropriate model.
+
+\end{itemize}
+
+If you know of topics that would be of general interest and could be incorporated in the \texttt{prob} package framework, I would be happy to hear about them.  Comments and suggestions are always welcomed.
+
+
+
+\end{document}
+
+

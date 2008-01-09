@@ -1,0 +1,53 @@
+
+
+export(
+addrv,
+cards,
+countrep,
+empirical,
+euchredeck,
+iidspace,
+intersect,
+is.probspace,
+isin,
+isrep,
+marginal,
+noorder,
+nsamp,
+permsn,
+prob,
+probspace,
+rolldie,
+roulette,
+setdiff,
+sim,
+subset,
+tosscoin,
+union,
+urnsamples)
+
+S3method(union, default)
+S3method(union, data.frame)
+S3method(union, ps)
+S3method(intersect, default)
+S3method(intersect, data.frame)
+S3method(intersect, ps)
+S3method(setdiff, default)
+S3method(setdiff, data.frame)
+S3method(setdiff, ps)
+S3method(urnsamples, default)
+S3method(urnsamples, data.frame)
+S3method(probspace, default)
+S3method(probspace, list)
+S3method(prob, default)
+S3method(prob, ps)
+S3method(isin, default)
+S3method(isin, data.frame)
+S3method(isrep, default)
+S3method(isrep, data.frame)
+S3method(countrep, default)
+S3method(countrep, data.frame)
+S3method(subset, ps)
+S3method(sim, default)
+S3method(sim, ps)
+
