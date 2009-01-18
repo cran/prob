@@ -14,18 +14,20 @@ Elementary Probability on Finite Sample Spaces
  There are some functions included to set up some of the standard sample spaces usually encountered in an elementary probability course.  Examples include tossing a coin, rolling a die, drawing from a 52 card deck, \emph{etc}.  If you know of topics that would be of general interest and could be incorporated in the \code{prob} package framework, I would be happy to hear about them.  Comments and suggestions are always welcomed.
  
  The \code{prob} package is a first step toward addressing probability in \code{R}, and has been written in the spirit of simplicity.  The procedures work best to solve problems that are manageable in scope.  Users that wish to investigate especially large or intricate problems are encouraged to modify and streamline the code to suit their individual needs. 
+
+Characteristic functions for the base probability distributions have been included.  For details, type \code{vignette("charfunc")} at the command prompt.
 }
 
 \details{
 \tabular{ll}{
 Package: \tab prob\cr
-Version: \tab 0.9-1\cr
-Date: \tab 2008-01-09\cr
+Version: \tab 0.9-2\cr
+Date: \tab 2009-01-18\cr
 Depends: \tab R (>= 2.1.0)\cr
-Suggests: \tab combinat\cr
+Suggests: \tab combinat, fAsianOptions, hypergeo, VGAM\cr
 LazyLoad: \tab no\cr
 License: \tab GPL version 2 or newer\cr
-URL: \tab http://www.r-project.org,
+URL: \tab http://prob.r-forge.r-project.org,
 http://www.cc.ysu.edu/~gjkerns\cr
 }
 

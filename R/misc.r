@@ -32,16 +32,22 @@
 
 
 
-`permsn` <- function (x, m){
+`permsn` <- function (x, m)
+{
+
     require(combinat)
-    if (is.numeric(x) && length(x) == 1 && x > 0 && trunc(x) == 
-        x) 
+    if (is.numeric(x) && length(x) == 1 && x > 0 && trunc(x) == x)
+
         x <- seq(x)
     temp <- combn(x, m)
-    if (m == length(x) | m == 1) {
+    if ( isTRUE(all.equal(m,1)) ) {
+
         P <- temp
-    }
-    else {
+    } else if (isTRUE(all.equal(m, length(x)))) {
+
+        temp <- matrix(x, ncol = 1)
+        P <- array(unlist(permn(temp[, 1])), dim = c(m, factorial(m)))
+    } else {
         k <- dim(temp)[1]
         n <- dim(temp)[2]
         P <- array(unlist(permn(temp[, 1])), dim = c(k, factorial(k)))
@@ -50,6 +56,8 @@
             perms <- array(unlist(permn(a)), dim = c(k, factorial(k)))
             P <- cbind(P, perms)
         }
+
+
     }
     return(P)
 }

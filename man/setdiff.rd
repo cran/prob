@@ -33,7 +33,7 @@ This function operates row-wise on dataframes, and element-wise among the outcom
 }
 
 
-\author{G. Jay Kerns \email{gkerns@ysu.edu}, from a suggestion made by Brian Ripley on \code{R}-help.}
+\author{G. Jay Kerns \email{gkerns@ysu.edu}, essentially verbatim from a suggestion made by Brian Ripley on \code{R}-devel, 12/11/07.}
 
 \seealso{\code{\link[prob]{intersect}}, \code{\link[prob]{union}}}
 

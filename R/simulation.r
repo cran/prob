@@ -19,11 +19,13 @@ UseMethod("sim")
 
 
 `sim.default` <- function (x, ntrials, ...){
-    out <- x[, -which(names(x) == "probs")]
+    out <- data.frame(x[, -which(names(x) == "probs")])
+    names(out) <- names(x)[-which(names(x) == "probs")]
     p <- x$probs
     d <- dim(x)[1]
     ind <- sample(1:d, size = ntrials, replace = TRUE, prob = p)
-    res <- out[ind, ]
+    res <- as.data.frame(out[ind, ])
+    names(res) <- names(out)
     rownames(res) <- 1:ntrials
     return(res)
 }

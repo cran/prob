@@ -33,7 +33,7 @@ This is a generic function, extended from the \code{intersect} function in the \
 }
 
 
-\author{G. Jay Kerns \email{gkerns@ysu.edu}.}
+\author{G. Jay Kerns \email{gkerns@ysu.edu}, based on a suggestion made by Brian Ripley in \code{R}-devel, 12/11/07.}
 
 \seealso{\code{\link[prob]{union}}, \code{\link[prob]{setdiff}}}
 

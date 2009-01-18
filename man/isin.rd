@@ -35,7 +35,7 @@ This is a generic function with a moethod for data frames, which applies \code{i
 
 \author{G. Jay Kerns \email{gkerns@ysu.edu}.}
 
-\seealso{\code{\link[base]{countrep}}, \code{\link[prob]{isrep}}}
+\seealso{\code{\link[prob]{isrep}}}
 
 \examples{
 x <- 1:10
