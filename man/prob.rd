@@ -1,7 +1,8 @@
 \name{prob}
 \alias{prob}
-\alias{prob.default}
-\alias{prob.ps}
+\alias{Prob}
+\alias{Prob.default}
+\alias{Prob.ps}
 
 \title{Probability and Conditional Probability}
 \description{
@@ -9,11 +10,11 @@
 }
 
 \usage{
-prob(x, \dots)
+Prob(x, \dots)
 
-\method{prob}{default}(x, event = NULL, given = NULL, \ldots)
+\method{Prob}{default}(x, event = NULL, given = NULL, \ldots)
 
-\method{prob}{ps}(x, event = NULL, given = NULL, \ldots)
+\method{Prob}{ps}(x, event = NULL, given = NULL, \ldots)
 }
 
 \arguments{
@@ -27,9 +28,9 @@ prob(x, \dots)
 
 \details{
   This function calculates the probability of events or subsets of a given sample space.
-  Conditional probability is also implemented.  In essence, the \code{prob()} function operates by summing the \code{probs} column of its argument.  It will find subsets on the fly if desired.  
+  Conditional probability is also implemented.  In essence, the \code{Prob()} function operates by summing the \code{probs} column of its argument.  It will find subsets on the fly if desired.  
   
-  The \code{event} argument is used to define a subset of \code{x}, that is, the only outcomes used in the probability calculation will be those that are elements of \code{x} and satisfy \code{event} simultaneously. In other words, \code{prob(x,event)} calculates \code{prob(intersect(x, subset(x, event)))}.  Consequently, \code{x} should be the entire probability space in the case that \code{event} is non-null.
+  The \code{event} argument is used to define a subset of \code{x}, that is, the only outcomes used in the probability calculation will be those that are elements of \code{x} and satisfy \code{event} simultaneously. In other words, \code{Prob(x,event)} calculates \code{Prob(intersect(x, subset(x, event)))}.  Consequently, \code{x} should be the entire probability space in the case that \code{event} is non-null.
   
   There is some flexibility in the \code{given} argument in that it can be either a data frame or it can be a logical expression that defines the subset.  However, that flexibility is limited.  In particular, if \code{given} is a logical expression, then \code{event} must also be specified (also a logical expression).  And in this case, the argument \code{x} should be the entire sample space, not a subset thereof. 
 }
@@ -45,7 +46,7 @@ prob(x, \dots)
 
 \examples{
 S <- rolldie(times = 3, makespace = TRUE )
-prob(S, X1+X2 > 9 )
-prob(S, X1+X2 > 9, given = X1+X2+X3 > 7 )
+Prob(S, X1+X2 > 9 )
+Prob(S, X1+X2 > 9, given = X1+X2+X3 > 7 )
 }
 \keyword{misc} 

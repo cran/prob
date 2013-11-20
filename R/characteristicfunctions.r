@@ -7,7 +7,7 @@ cfbeta <- function(t, shape1, shape2, ncp = 0){
     if (shape1 <=0 || shape2 <=0)
         stop("shape1, shape2 must be positive")
     if (identical(all.equal(ncp, 0), TRUE)){
-        require(fAsianOptions)
+        # require(fAsianOptions)
         kummerM(1i*t, shape1, shape1 + shape2)
     } else {
         fr <- function(x) cos(t*x)*dbeta(x, shape1, shape2, ncp)
@@ -47,7 +47,7 @@ cfexp <- function(t, rate = 1){
 cff <- function(t, df1, df2, ncp, kmax = 10){
     if (df1 <= 0 || df2 <= 0  )
         stop("df1 and df2 must be positive")
-    require(fAsianOptions)
+    # require(fAsianOptions)
     if( identical(all.equal(ncp, 0), TRUE) ){
         gamma((df1+df2)/2) / gamma(df2/2) * kummerU(-1i*df2*t/df1, df1/2, 1 - df2/2)
     } else {
@@ -71,7 +71,7 @@ cfgeom <- function(t, prob){
 cfhyper <- function(t, m, n, k){
     if (m < 0 || n < 0 || k < 0)
         stop("m, n, k must be positive")
-    hypergeo:::hypergeo(-k, -m, n - k + 1, exp(1i*t))/hypergeo:::hypergeo(-k, -m, n - k + 1, 1)
+    hypergeo::hypergeo(-k, -m, n - k + 1, exp(1i*t))/hypergeo::hypergeo(-k, -m, n - k + 1, 1)
 }
 
 

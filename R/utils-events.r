@@ -3,11 +3,9 @@
 `countrep` <- function (x, ...)
 UseMethod("countrep")
 
-
 `countrep.data.frame` <- function (x, ...){
     apply(x, MARGIN = 1, FUN = countrep, ...)
 }
-
 
 
 `countrep.default` <- function (x, vals = unique(x), nrep = 2, ...){
@@ -22,7 +20,6 @@ UseMethod("countrep")
     }
     return(res)
 }
-
 
 
 `isin` <- function (x, ...)

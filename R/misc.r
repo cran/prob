@@ -35,7 +35,7 @@
 `permsn` <- function (x, m)
 {
 
-    require(combinat)
+    # require(combinat)
     if (is.numeric(x) && length(x) == 1 && x > 0 && trunc(x) == x)
 
         x <- seq(x)

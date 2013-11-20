@@ -1,25 +1,22 @@
 Package: prob
-Version: 0.9-2
-Date: 2009-1-18
+Version: 0.9-5
+Date: 2013-11-20
 Title: Elementary Probability on Finite Sample Spaces
-Author: G. Jay Kerns <gkerns@ysu.edu>
+Authors@R: person(given = "G. Jay", family = "Kerns", role = c("aut", "cre", "cph"), email = "gkerns@ysu.edu")
+Depends: combinat, fAsianOptions, hypergeo, VGAM
+Description: 
+ This package provides a framework for performing elementary probability
+ calculations on finite sample spaces, which may be represented by data frames
+ or lists.  Functionality includes setting up sample spaces, counting tools,
+ defining probability spaces, performing set algebra, calculating probability
+ and conditional probability, tools for simulation and checking the law of
+ large numbers, adding random variables, and finding marginal distributions.
+ Characteristic functions for all base R distributions are included.
+License: GPL (>= 3)
+URL: http://prob.r-forge.r-project.org, http://people.ysu.edu/~gkerns/
+Packaged: 2013-12-11 16:32:13 UTC; jay
+Author: G. Jay Kerns [aut, cre, cph]
 Maintainer: G. Jay Kerns <gkerns@ysu.edu>
-Depends:
-Suggests: combinat, fAsianOptions, hypergeo, VGAM
-LazyLoad: no
-Description: This package provides a framework for performing
-        elementary probability calculations on finite sample spaces,
-        which may be represented by data frames or lists.
-        Functionality includes setting up sample spaces, counting
-        tools, defining probability spaces, performing set algebra,
-        calculating probability and conditional probability, tools for
-        simulation and checking the law of large numbers, adding random
-        variables, and finding marginal distributions. Characteristic
-        functions for all base R distributions are included.
-License: GPL (>= 2)
-URL: http://prob.r-forge.r-project.org, http://www.cc.ysu.edu/~gjkerns
+NeedsCompilation: no
 Repository: CRAN
-Repository/R-Forge/Project: prob
-Repository/R-Forge/Revision: 39
-Date/Publication: 2009-11-02 07:47:59
-Packaged: 2009-11-01 21:13:27 UTC; rforge
+Date/Publication: 2013-12-11 18:41:19

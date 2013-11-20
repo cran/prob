@@ -35,6 +35,7 @@ noorder,
 nsamp,
 permsn,
 prob,
+Prob,
 probspace,
 rolldie,
 roulette,
@@ -58,8 +59,8 @@ S3method(urnsamples, default)
 S3method(urnsamples, data.frame)
 S3method(probspace, default)
 S3method(probspace, list)
-S3method(prob, default)
-S3method(prob, ps)
+S3method(Prob, default)
+S3method(Prob, ps)
 S3method(isin, default)
 S3method(isin, data.frame)
 S3method(isrep, default)
