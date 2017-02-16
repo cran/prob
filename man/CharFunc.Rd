@@ -292,8 +292,7 @@ cfwilcox(t, m, n)
   
   Hurst, S. (1995) The Characteristic Function of the Student-t
   Distribution, Financial Mathematics Research Report No. FMRR006-95,
-  Statistics Research Report No. SRR044-95, available online:
-  \url{http://wwwmaths.anu.edu.au/research.reports/srr/95/044/}
+  Statistics Research Report No. SRR044-95.
 
   Johnson, N. L., Kotz, S., and Kemp, A. W. (1992)
   \emph{Univariate Discrete Distributions},

@@ -1,5 +1,11 @@
+importFrom("stats", "aggregate", "dbeta", "dsignrank", "dt",
+             "dweibull", "dwilcox", "integrate", "rbinom")
+importFrom("utils", "combn")
+importFrom("fAsianOptions", "kummerM", "kummerU")
+importFrom("combinat", "permn")
 
-
+# Export all names
+exportPattern(".")
 export(
 addrv,
 cards,

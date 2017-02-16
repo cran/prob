@@ -769,8 +769,7 @@ Communications}, \textbf{56} (3): 331--333.
 
 \bibitem{studentst}Hurst, S. (1995) The Characteristic Function of
 the Student-t Distribution, Financial Mathematics Research Report
-No. FMRR006-95, Statistics Research Report No. SRR044-95, available
-online: \url{http://wwwmaths.anu.edu.au/research.reports/srr/95/044/}
+No. FMRR006-95, Statistics Research Report No. SRR044-95.
 \end{thebibliography}
 
 \end{document}

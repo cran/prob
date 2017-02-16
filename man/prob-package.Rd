@@ -5,7 +5,7 @@
 Elementary Probability on Finite Sample Spaces
 }
 \description{
- This package provides a framework for performing elementary probability calculations on finite sample spaces.   It is built around the concept of a \emph{probability space}, which is an object of outcomes and an object \code{probs} of probabilities associated with the outcomes.
+ A framework for performing elementary probability calculations on finite sample spaces.   It is built around the concept of a \emph{probability space}, which is an object of outcomes and an object \code{probs} of probabilities associated with the outcomes.
  
  There are two ways to represent a probability space in the \code{prob} package.  The first is with a data frame that has a \code{probs} column.  Entries of \code{probs} should be nonnegative and sum to one.  The second way is with a list having two components: \code{outcomes} and \code{probs}.  The component \code{outcomes} is a list containing elements of the most arbitrary sort; they can be data frames, vectors, more lists, whatever.  The \code{probs} component is a vector (of the same length as \code{outcomes}), which associates to each element of \code{outcomes} a nonnegative number.  As before, the only additional requirement is that the \code{sum} of \code{probs} be one.
  
@@ -21,13 +21,14 @@ Characteristic functions for the base probability distributions have been includ
 \details{
 \tabular{ll}{
 Package: \tab prob\cr
-Version: \tab 0.9-5\cr
-Date: \tab 2013-11-20\cr
-Depends: \tab combinat, fAsianOptions, hypergeo, VGAM\cr
+Version: \tab 1.0-0\cr
+Date: \tab 2017-02-15\cr
+Depends: \tab combinat, fAsianOptions\cr
+Suggests: \tab VGAM, hypergeo\cr
 LazyLoad: \tab no\cr
 License: \tab GPL version 3 or newer\cr
 URL: \tab http://prob.r-forge.r-project.org,
-http://people.ysu.edu/~gkerns\cr
+http://gkerns.people.ysu.edu/\cr
 }
 
 }
