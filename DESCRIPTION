@@ -1,6 +1,6 @@
 Package: prob
-Version: 1.0-0
-Date: 2017-02-15
+Version: 1.0-1
+Date: 2018-08-27
 Title: Elementary Probability on Finite Sample Spaces
 Authors@R: person(given = "G. Jay", family = "Kerns", role = c("aut", "cre", "cph"), email = "gkerns@ysu.edu")
 Depends: combinat, fAsianOptions
@@ -15,9 +15,12 @@ Description:
  Characteristic functions for all base R distributions are included.
 License: GPL (>= 3)
 URL: http://prob.r-forge.r-project.org, http://gkerns.people.ysu.edu/
-NeedsCompilation: no
-Packaged: 2017-02-16 04:27:25 UTC; jay
 Author: G. Jay Kerns [aut, cre, cph]
 Maintainer: G. Jay Kerns <gkerns@ysu.edu>
 Repository: CRAN
-Date/Publication: 2017-02-16 07:13:39
+Repository/R-Forge/Project: prob
+Repository/R-Forge/Revision: 51
+Repository/R-Forge/DateTimeStamp: 2018-08-27 16:33:32
+Date/Publication: 2018-08-27 19:20:03 UTC
+NeedsCompilation: no
+Packaged: 2018-08-27 16:50:38 UTC; rforge

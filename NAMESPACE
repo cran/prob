@@ -1,8 +1,8 @@
 importFrom("stats", "aggregate", "dbeta", "dsignrank", "dt",
              "dweibull", "dwilcox", "integrate", "rbinom")
 importFrom("utils", "combn")
-importFrom("fAsianOptions", "kummerM", "kummerU")
 importFrom("combinat", "permn")
+importFrom("fAsianOptions", "kummerU", "kummerM")
 
 # Export all names
 exportPattern(".")
@@ -14,9 +14,9 @@ cfbinom,
 cfcauchy,
 cfchisq,
 cfexp,
-cff,
 cfgamma,
 cfgeom,
+cff,
 cfhyper,
 cflnorm,
 cflogis,

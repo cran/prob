@@ -1,6 +1,6 @@
-5563150ef409dcdf3edf8104c7fe8dd7 *DESCRIPTION
-df7040507091975b2bd9bef35261c71f *NAMESPACE
-63fd0ddde19669e1bb6b5342a8743bf6 *R/characteristicfunctions.r
+e3155a9771474a2e3f98ee1b0d95f8bb *DESCRIPTION
+9ae821f02b88d59267821a239840ff54 *NAMESPACE
+cf6521bec8a594f39281aee8b616da7e *R/characteristicfunctions.r
 c9b1297cbd228d3aca87f1c4cce3fe41 *R/genData.R
 d4305faa4f9fc67a643c8c01fa7d59d5 *R/misc.r
 d773b28813ba51ebb7ab8a4ebb17159a *R/prob.r
@@ -10,13 +10,13 @@ d9b7a13b9f6def5d1bccc1a22a1c1249 *R/spaces-examples.r
 13d26ac7e993bac3d2ba4d5a922ea2ec *R/utils-events.r
 9d54493bccfd39e7f703606f2b8df591 *R/utils-spaces.r
 2e33344b72cd0bb6fca6213d916378ae *R/utils-subsets.r
-5d4aa9d0ca9cbac836c10c043af4249f *build/vignette.rds
-11976e5921656e90de37dc430a4e59cd *inst/doc/charfunc.Rnw
-1b3356efed789b262d40203cf96a8927 *inst/doc/charfunc.pdf
+72b081ac52345ca9ba3db4af575ef97a *build/vignette.rds
+6f66cc9b6bfb0a1d4e85a82c1b581bf7 *inst/doc/charfunc.Rnw
+354ffac8bbe986412157b5ee5220378f *inst/doc/charfunc.pdf
 3223ea4188f239ec2c9aaf7c9e438f82 *inst/doc/prob.R
 db2fb7ac27f900a9b034405346d20b20 *inst/doc/prob.Rnw
-d96c6f6d921ff98527b33aaa67751e17 *inst/doc/prob.pdf
-f84bd26bcc5e4b0e3ea3096a4a4bb668 *man/CharFunc.Rd
+ef213e2cf5ab8ce253aa1ea9579636b1 *inst/doc/prob.pdf
+bb4be8d61bf8af23e681a470ea636a0e *man/CharFunc.Rd
 d3c2db4ca2dab09eb4214fc8a8d82dd9 *man/addrv.rd
 61816f040e4ceef384b77571dbec6cc9 *man/cards.rd
 4546cd2895bdba7415e6d994fa8aaf39 *man/countrep.rd
@@ -35,7 +35,7 @@ fdc98cfcd87767403520f511faa3b2f6 *man/marginal.rd
 4114ae3691f1afc9f32d074ba4b7e05d *man/noorder.rd
 105c9db7914bc88b9fff1f28b702ca8e *man/nsamp.rd
 ddcdfc64aadbb0c06b77154c54959806 *man/permsn.rd
-35f6dddaed628c49b71e26627b70b2d1 *man/prob-package.Rd
+f682e8146e46292f75059cf832ce3256 *man/prob-package.Rd
 065a634c37c5e47f8cbafb3a34972564 *man/prob.rd
 a94e34bb8f646bbf849f788b5537d215 *man/probspace.rd
 753cdcfa70adba1defc16c82e6d1679b *man/rolldie.rd
@@ -46,5 +46,5 @@ d37d7f17211314c7fb30732b77db14ed *man/setdiff.rd
 393a45ff1e004f513209e8faa03d1758 *man/tosscoin.rd
 595472565f80b5f0dd28222f34d49a68 *man/union.rd
 fe82580b5fb9a72605b04a952d1e565a *man/urnsamples.rd
-11976e5921656e90de37dc430a4e59cd *vignettes/charfunc.Rnw
+6f66cc9b6bfb0a1d4e85a82c1b581bf7 *vignettes/charfunc.Rnw
 db2fb7ac27f900a9b034405346d20b20 *vignettes/prob.Rnw

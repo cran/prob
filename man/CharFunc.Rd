@@ -58,9 +58,9 @@ cfwilcox(t, m, n)
 \arguments{
   \item{t}{numeric value.  Some of the above are vectorized functions.}
   \item{df}{degrees of freedom (\eqn{> 0}, maybe non-integer)}
-  \item{df1, df2}{numerator and denominator degrees of freedom, must be positive}
+  \item{df1, df2}{degrees of freedom (\eqn{> 0}, maybe non-integer)}
   \item{k}{the number of balls drawn from the urn.}
-  \item{kmax}{the number of terms in the series.}
+  \item{kmax}{upper limit of summation.}
   \item{lambda}{vector of (positive) means.}
   \item{location, scale}{location and scale parameters; scale must be positive.}
   \item{m}{the number of white balls in the urn.}
@@ -75,10 +75,10 @@ cfwilcox(t, m, n)
   \item{prob}{probability of success in each trial.}
   \item{rate}{an alternative way to specify the scale; must be positive.}  
   \item{sd}{vector of standard deviations.}
+  \item{shape}{shape parameter, must be positive (gamma, weibull)}
+  \item{shape1, shape2}{shape parameters (beta).}
   \item{size}{number of trials (binom) or target for number of successful trials
     (nbinom).}
-  \item{shape}{shape parameter, must be positive (gamma, weibull)}
-  \item{shape1, shape2}{positive parameters of the Beta distribution.}  
 }
 
 \value{

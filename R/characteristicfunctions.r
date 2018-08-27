@@ -4,19 +4,19 @@
 
 
 cfbeta <- function(t, shape1, shape2, ncp = 0){
-    if (shape1 <=0 || shape2 <=0)
-        stop("shape1, shape2 must be positive")
-    if (identical(all.equal(ncp, 0), TRUE)){
-        # require(fAsianOptions)
-        kummerM(1i*t, shape1, shape1 + shape2)
-    } else {
-        fr <- function(x) cos(t*x)*dbeta(x, shape1, shape2, ncp)
-        fi <- function(x) sin(t*x)*dbeta(x, shape1, shape2, ncp)
-        Rp <- integrate(fr, lower = 0, upper = 1)$value
-        Ip <- integrate(fi, lower = 0, upper = 1)$value
-        return( Rp + 1i*Ip )
-    }
-}
+     if (shape1 <=0 || shape2 <=0)
+         stop("shape1, shape2 must be positive")
+     if (identical(all.equal(ncp, 0), TRUE)){
+         #require(fAsianOptions)
+         kummerM(1i*t, shape1, shape1 + shape2)
+     } else {
+         fr <- function(x) cos(t*x)*dbeta(x, shape1, shape2, ncp)
+         fi <- function(x) sin(t*x)*dbeta(x, shape1, shape2, ncp)
+         Rp <- integrate(fr, lower = 0, upper = 1)$value
+         Ip <- integrate(fi, lower = 0, upper = 1)$value
+         return( Rp + 1i*Ip )
+     }
+ }
 
 
 cfbinom <- function(t, size, prob){
@@ -45,15 +45,15 @@ cfexp <- function(t, rate = 1){
 }
 
 cff <- function(t, df1, df2, ncp, kmax = 10){
-    if (df1 <= 0 || df2 <= 0  )
-        stop("df1 and df2 must be positive")
-    # require(fAsianOptions)
-    if( identical(all.equal(ncp, 0), TRUE) ){
-        gamma((df1+df2)/2) / gamma(df2/2) * kummerU(-1i*df2*t/df1, df1/2, 1 - df2/2)
-    } else {
-        exp(-ncp/2)*sum((ncp/2)^(0:kmax)/factorial(0:kmax)* kummerM(-1i*df2*t/df1, df1/2 + 0:kmax, -df2/2))
-    }
-}
+     if (df1 <= 0 || df2 <= 0  )
+         stop("df1 and df2 must be positive")
+    #require(fAsianOptions)
+     if( identical(all.equal(ncp, 0), TRUE) ){
+         gamma((df1+df2)/2) / gamma(df2/2) * kummerU(-1i*df2*t/df1, df1/2, 1 - df2/2)
+     } else {
+         exp(-ncp/2)*sum((ncp/2)^(0:kmax)/factorial(0:kmax)* kummerM(-1i*df2*t/df1, df1/2 + 0:kmax, -df2/2))
+     }
+ }
 
 
 cfgamma <- function(t, shape, rate = 1, scale = 1/rate){

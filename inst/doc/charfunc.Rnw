@@ -60,6 +60,7 @@
 \usepackage{babel}
 
 \begin{document}
+\SweaveOpts{concordance=TRUE}
 
 \title{Characteristic Functions in the \Rpackage{prob} package}
 
